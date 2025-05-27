@@ -6,7 +6,7 @@ import { Toaster } from 'react-hot-toast';
 function App() {
   return (
     <Provider store={store}>
-      <div className="App">
+      <div>
         <Home />
         <Toaster position="top-center" />
       </div>

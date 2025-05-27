@@ -1,97 +1,105 @@
-import { motion } from 'framer-motion';
-import { getImageUrl } from '../api/imageApi';
-import { useState } from 'react';
-import type { Image } from '../models/images';
-import { FiBookmark, FiShare2, FiStar } from 'react-icons/fi';
+import { motion } from "framer-motion";
+import { getImageUrl } from "../api/imageApi";
+import { useState } from "react";
+import type { Image } from "../models/images";
+import { FiDownload, FiCalendar, FiImage } from "react-icons/fi";
+import { formatDate } from "../utils/helpers";
 
 interface ImageCardProps {
   image: Image;
   onClick: () => void;
 }
 
+
 const ImageCard = ({ image, onClick }: ImageCardProps) => {
   const [loaded, setLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Extract file extension from contentType
+  const fileType = image.contentType?.split('/')[1]?.toUpperCase() || '';
+
+  const typeColorMap: Record<string, string> = {
+  JPEG: "bg-yellow-100 text-yellow-800",
+  PNG: "bg-blue-100 text-blue-800",
+  WEBP: "bg-green-100 text-green-800",
+  SVG: "bg-purple-100 text-purple-800",
+  GIF: "bg-pink-100 text-pink-800",
+  DEFAULT: "bg-gray-100 text-gray-800",
+};
+
+const typeClass = typeColorMap[fileType] || typeColorMap.DEFAULT;
+
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: loaded ? 1 : 0, y: loaded ? 0 : 20 }}
-      transition={{ duration: 0.3 }}
-      className="relative rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+      transition={{ duration: 0.1 }}
+      whileHover={{ 
+        scale: 1.03,
+        zIndex: 10,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+      }}
       onClick={onClick}
+      className="relative rounded-2xl cursor-pointer overflow-hidden bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image with subtle zoom effect on hover */}
-      <div className="relative h-64 w-full overflow-hidden">
+      {/* Image with hover zoom */}
+      <div className="relative h-56 w-full overflow-hidden p-2">
         <motion.img
           src={getImageUrl(image.fileId)}
           alt={image.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover rounded-xl"
           initial={{ scale: 1 }}
-          animate={{ scale: isHovered ? 1.05 : 1 }}
           transition={{ duration: 0.4 }}
           onLoad={() => setLoaded(true)}
         />
-        
+
         {/* Top-right actions */}
-        <motion.div 
-          className="absolute top-3 right-3 flex gap-2"
+        <motion.div
+          className="absolute top-4 right-4 flex gap-2"
           initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0.7 }}
+          animate={{ 
+            opacity: isHovered ? 1 : 0.7,
+            y: isHovered ? 0 : -1
+          }}
         >
-          <button 
-            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle bookmark
-            }}
+          <button
+            className="p-2 bg-white/90 rounded-full cursor-pointer shadow-sm hover:bg-gray-100 transition-colors"
+            onClick={(e) => e.stopPropagation()}
           >
-            <FiBookmark className="text-gray-700" size={16} />
-          </button>
-          <button 
-            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle share
-            }}
-          >
-            <FiShare2 className="text-gray-700" size={16} />
+            <FiDownload className="text-gray-700" size={16} />
           </button>
         </motion.div>
+
+        {/* Date badge */}
+        <div className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+          <FiCalendar size={12} />
+          <span>{formatDate(image.uploadDate)}</span>
+        </div>
       </div>
 
-      {/* Content area with refined gradient */}
-      <div className="relative px-5 pb-5 pt-16 -mt-12 bg-gradient-to-t from-blue-600/90 via-blue-500/50 to-transparent">
-        {/* Rating badge */}
-        <div className="absolute -top-4 left-5 flex items-center bg-white text-blue-600 px-3 py-1 rounded-full shadow-md text-sm font-medium">
-          <FiStar className="fill-yellow-400 text-yellow-400 mr-1" size={14} />
-          4.8
-        </div>
-        
-        {/* Title and description */}
-        <div className="text-white">
-          <h3 className="text-lg font-semibold line-clamp-1">{image.title}</h3>
-          <p className="text-sm text-blue-100 line-clamp-2 mt-1">
-            {image.description}
-          </p>
-        </div>
+      {/* Content area */}
+      <div className="p-4 pt-3 pb-5">
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex-1 min-w-0">
+            {/* Title with ellipsis */}
+            <h3 className="text-md font-bold text-gray-900 truncate">
+              {image.title}
+            </h3>
+            
+            {/* Description with ellipsis */}
+            <p className="text-sm text-gray-500 truncate">
+              {image.description}
+            </p>
+          </div>
+          
+          {/* Modern file type badge */}
+          <div className={`flex flex-col items-center justify-center px-2 py-1.5 rounded-xl shadow-inner backdrop-blur-md ${typeClass}`}>
+  <span className="text-xs font-bold">{fileType}</span>
+</div>
 
-        {/* Bottom info and button */}
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-xs text-blue-200">3 night stay</span>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-white text-blue-600 font-medium py-2 px-5 rounded-full text-sm hover:bg-blue-50 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick();
-            }}
-          >
-            Reserve
-          </motion.button>
         </div>
       </div>
     </motion.div>
