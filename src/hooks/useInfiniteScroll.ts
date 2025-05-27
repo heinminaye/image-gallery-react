@@ -81,7 +81,7 @@ export const useInfiniteScroll = () => {
         observerRef.current.unobserve(currentRef);
       }
     };
-  }, [ loading, hasMore]);
+  }, [loadMoreImages, loading, hasMore]);
 
   return { loadMoreRef, loading };
 };
