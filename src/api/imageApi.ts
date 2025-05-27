@@ -1,0 +1,51 @@
+import axios from 'axios';
+import config from './config';
+import type { Image, ImageResponse } from '../models/images';
+
+export const fetchImages = async (
+  cursor: string | null = null,
+  limit: number = 10,
+  search: string | null = null
+): Promise<ImageResponse> => {
+  try {
+    const response = await axios.get<ImageResponse>(config.endpoints.images, {
+      params: { cursor, limit, search },
+      baseURL: config.apiBaseUrl,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch images');
+  }
+};
+
+export const uploadImage = async (
+  file: File,
+  title: string,
+  description: string,
+  width?: number,
+  height?: number
+): Promise<Image> => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('title', title);
+    formData.append('description', description);
+    if (width) formData.append('width', width.toString());
+    if (height) formData.append('height', height.toString());
+
+    const response = await axios.post(config.endpoints.upload, formData, {
+      baseURL: config.apiBaseUrl,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data.image;
+  } catch (error) {
+    throw new Error('Failed to upload image');
+  }
+};
+
+export const getImageUrl = (fileId: string): string => {
+  return `${config.imageBaseUrl}/${fileId}`;
+};
