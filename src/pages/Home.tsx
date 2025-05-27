@@ -6,7 +6,7 @@ import ImageModal from '../components/ImageModal';
 import SearchBar from '../components/SearchBar';
 import UploadModal from '../components/UploadModal';
 import { motion } from 'framer-motion';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiImage, FiUpload } from 'react-icons/fi';
 import Loader from '../components/Loader';
 import type { Image } from '../models/images';
 
@@ -17,50 +17,57 @@ const Home = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <header className="sticky top-0 z-50 bg-white shadow-md py-4 px-4 sm:px-6 lg:px-8">
-  <div className="max-w-7xl flex justify-between items-center h-full gap-4 flex-wrap">
-    <motion.h1
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-3xl font-semibold text-gray-900 flex-shrink-0"
-    >
-      Image Gallery
-    </motion.h1>
+        {/* Unified Header */}
+        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm py-4 px-6 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3"
+            >
+              <div className="bg-blue-500/10 p-2.5 rounded-xl text-blue-600">
+                <FiImage size={24} />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+                Pixel Gallery
+              </h1>
+            </motion.div>
 
-    {/* Search bar and Add button container */}
-    <div className="flex items-center gap-3 flex-grow min-w-[250px] max-w-lg">
-      <SearchBar />
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsUploadModalOpen(true)}
-        aria-label="Add new image"
-        className="bg-blue-600 text-white p-3 rounded-lg shadow hover:bg-blue-700 transition-colors flex-shrink-0"
-      >
-        Add Image
-      </motion.button>
-    </div>
-  </div>
-</header>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <SearchBar />
+              <motion.button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 cursor-pointer text-white px-4 py-2.5 rounded-xl shadow-sm transition-all text-sm font-medium"
+              >
+                <FiUpload size={16} />
+                <span>Upload</span>
+              </motion.button>
+            </div>
+          </div>
+        </header>
 
+        {/* Error State */}
         {error && (
-          <div className="my-6 p-4 bg-red-100 text-red-700 rounded-lg text-center max-w-xl mx-auto">
+          <div className="my-6 mx-4 p-3 bg-red-50 text-red-600 rounded-lg text-center text-sm font-medium border border-red-100">
             {error}
           </div>
         )}
 
+        {/* Empty State */}
         {!loading && images.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-500">No images found</p>
+            <div className="inline-flex items-center justify-center bg-blue-50 p-5 rounded-full mb-4">
+              <FiImage className="text-blue-500" size={28} />
+            </div>
+            <p className="text-gray-500 text-sm font-medium">No images found</p>
           </div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-8 py-0 px-4 sm:px-6 lg:px-8"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-5"
           >
             {images.map((image) => (
               <ImageCard
@@ -72,6 +79,7 @@ const Home = () => {
           </motion.div>
         )}
 
+        {/* Loading State */}
         {loading && (
           <div className="flex justify-center my-12">
             <Loader />
@@ -79,14 +87,8 @@ const Home = () => {
         )}
 
         <div ref={loadMoreRef} className="h-1" />
-        <ImageModal
-          image={selectedImage}
-          onClose={() => setSelectedImage(null)}
-        />
-        <UploadModal
-          isOpen={isUploadModalOpen}
-          onClose={() => setIsUploadModalOpen(false)}
-        />
+        <ImageModal image={selectedImage} onClose={() => setSelectedImage(null)} />
+        <UploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
       </div>
     </div>
   );
