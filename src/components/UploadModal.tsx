@@ -43,8 +43,10 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       if (fileRejections.length > 0) {
         const rejection = fileRejections[0];
-        if (rejection.errors.some(e => e.code === 'file-too-large')) {
-          toast.error(`File too large. Max size is ${maxFileSize / 1024 / 1024}MB`);
+        if (rejection.errors.some((e) => e.code === "file-too-large")) {
+          toast.error(
+            `File too large. Max size is ${maxFileSize / 1024 / 1024}MB`
+          );
         } else {
           toast.error("Only JPEG, PNG, WEBP images are allowed");
         }
@@ -148,7 +150,10 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
           >
             {/* Header */}
             <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
-              <h2 id="upload-modal-title" className="text-lg font-semibold text-gray-900">
+              <h2
+                id="upload-modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
                 Upload Image
               </h2>
               <button
@@ -182,7 +187,8 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                         {file.name}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {(file.size / 1024).toFixed(2)} KB · {file.type.split('/')[1].toUpperCase()}
+                        {(file.size / 1024).toFixed(2)} KB ·{" "}
+                        {file.type.split("/")[1].toUpperCase()}
                       </p>
 
                       <button
@@ -206,9 +212,9 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                         or click to browse files
                       </p>
                       <p className="text-xs text-gray-400">
-                        Supports: {Object.values(acceptedFileTypes)
-                          .flat()
-                          .join(', ')} (Max {maxFileSize / 1024 / 1024}MB)
+                        Supports:{" "}
+                        {Object.values(acceptedFileTypes).flat().join(", ")}{" "}
+                        (Max {maxFileSize / 1024 / 1024}MB)
                       </p>
                     </div>
                   )}
@@ -224,7 +230,10 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                 {/* Form Fields */}
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="image-title" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label
+                      htmlFor="image-title"
+                      className="block text-sm font-medium text-gray-700 mb-1.5"
+                    >
                       Title <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -240,7 +249,10 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                   </div>
 
                   <div>
-                    <label htmlFor="image-description" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label
+                      htmlFor="image-description"
+                      className="block text-sm font-medium text-gray-700 mb-1.5"
+                    >
                       Description <span className="text-red-500">*</span>
                     </label>
                     <textarea
@@ -260,9 +272,17 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                 <div className="flex space-x-3 pt-2">
                   <button
                     type="submit"
-                    disabled={!file || !title.trim() || !description.trim() || isUploading}
+                    disabled={
+                      !file ||
+                      !title.trim() ||
+                      !description.trim() ||
+                      isUploading
+                    }
                     className={`flex-1 py-2 px-4 rounded-lg text-white font-medium transition-colors ${
-                      !file || !title.trim() || !description.trim() || isUploading
+                      !file ||
+                      !title.trim() ||
+                      !description.trim() ||
+                      isUploading
                         ? "bg-blue-400 cursor-not-allowed"
                         : "bg-blue-500 hover:bg-blue-600"
                     }`}

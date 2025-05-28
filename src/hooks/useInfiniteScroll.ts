@@ -1,12 +1,11 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchImagesThunk } from '../store/slices/imageSlice';
-
 export const useInfiniteScroll = () => {
   const dispatch = useAppDispatch();
   const { images, loading, hasMore, nextCursor, searchQuery } = useAppSelector(
     (state) => state.images
-  );
+  ); 
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);

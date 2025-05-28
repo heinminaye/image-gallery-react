@@ -8,6 +8,7 @@ export const fetchImages = async (
   search: string | null = null
 ): Promise<ImageResponse> => {
   try {
+     
     const response = await axios.get<ImageResponse>(config.endpoints.images, {
       params: { cursor, limit, search },
       baseURL: config.apiBaseUrl,
@@ -15,6 +16,7 @@ export const fetchImages = async (
     if (response.data.returncode !== "200") {
       throw new Error(response.data.message)
     }
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { getImageUrl } from "../api/imageApi";
 import { useState } from "react";
 import type { Image } from "../models/images";
-import { FiDownload, FiCalendar, FiImage } from "react-icons/fi";
+import { FiDownload, FiCalendar } from "react-icons/fi";
 import { downloadFile, formatDate } from "../utils/helpers";
 
 interface ImageCardProps {

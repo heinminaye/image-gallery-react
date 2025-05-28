@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { fetchImages, uploadImage } from '../../api/imageApi';
-import type { RootState, ImagesState, Image } from '../../models/images';;
+import type {  ImagesState } from '../../models/images';;
 
 interface FetchImagesParams {
     cursor?: string | null;
@@ -11,7 +11,7 @@ interface FetchImagesParams {
 
 export const fetchImagesThunk = createAsyncThunk(
   'images/fetch',
-  async ({ cursor = null, limit = 12, search = null, initialLoad = false }: FetchImagesParams, { getState }) => {
+  async ({ cursor = null, limit = 12, search = null, initialLoad = false }: FetchImagesParams) => {
     const response = await fetchImages(cursor, limit, search);
     return {
       images: response.data.images,
@@ -31,13 +31,13 @@ export const uploadImageThunk = createAsyncThunk(
   }
 );
 
-const initialState = {
-  images: [] as Image[],
+const initialState: ImagesState = {
+  images: [],
   loading: false,
-  error: null as string | null,
+  error: null,
   hasMore: true,
-  nextCursor: null as string | null,
-  searchQuery: null as string | null,
+  nextCursor: null,
+  searchQuery: null,
 };
 
 
