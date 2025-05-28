@@ -8,7 +8,7 @@ import {
   IoImageOutline,
 } from 'react-icons/io5';
 import type { Image } from '../models/images';
-import { formatFileSize } from '../utils/helpers';
+import { downloadFile, formatFileSize } from '../utils/helpers';
 import { useEffect } from 'react';
 
 interface ImageModalProps {
@@ -54,7 +54,7 @@ const ImageModal = ({ image, onClose }: ImageModalProps) => {
               </h2>
               <button
                 onClick={onClose}
-                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-1 rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
                 aria-label="Close modal"
               >
                 <IoClose size={24} className="text-gray-500" />
@@ -85,17 +85,6 @@ const ImageModal = ({ image, onClose }: ImageModalProps) => {
               {/* Info section - improved spacing */}
               <div className="w-full md:w-1/2 p-4 md:p-6 overflow-y-auto bg-white border-t md:border-t-0 md:border-l border-gray-200">
                 <div className="space-y-4">
-                  {image.description && (
-                    <div className="flex gap-3">
-                      <IoInformationCircleOutline 
-                        size={20} 
-                        className="flex-shrink-0 text-gray-400 mt-0.5" 
-                      />
-                      <p className="text-gray-700 text-sm leading-relaxed">
-                        {image.description}
-                      </p>
-                    </div>
-                  )}
 
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
@@ -130,37 +119,35 @@ const ImageModal = ({ image, onClose }: ImageModalProps) => {
                         )}
                       </div>
                     </div>
-                  </div>
 
-                  {image.tags?.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 mb-2">Tags</p>
-                      <div className="flex flex-wrap gap-2">
-                        {image.tags.map(tag => (
-                          <span 
-                            key={tag} 
-                            className="px-2.5 py-1 bg-gray-100 text-xs rounded-full text-gray-700"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                    {image.description && (
+                    <div className="flex gap-3">
+                      <IoInformationCircleOutline 
+                        size={20} 
+                        className="flex-shrink-0 text-gray-400 mt-0.5" 
+                      />
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        {image.description}
+                      </p>
                     </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Sticky footer */}
            <div className="p-4 border-t border-gray-200 bg-white flex justify-end">
-              <a
-                href={getImageUrl(image.fileId)}
-                download
-                className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium shadow-sm"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  downloadFile(getImageUrl(image?.fileId), image.fileId, image.title);
+                }}
+                className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium shadow-sm"
               >
                 <IoDownloadOutline size={18} />
                 <span>Download</span>
-              </a>
+              </button>
             </div>
           </motion.div>
         </motion.div>

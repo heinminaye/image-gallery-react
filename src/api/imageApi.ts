@@ -12,8 +12,14 @@ export const fetchImages = async (
       params: { cursor, limit, search },
       baseURL: config.apiBaseUrl,
     });
+    if (response.data.returncode !== "200") {
+      throw new Error(response.data.message)
+    }
     return response.data;
   } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message); 
+    }
     throw new Error('Failed to fetch images');
   }
 };
@@ -39,9 +45,14 @@ export const uploadImage = async (
         'Content-Type': 'multipart/form-data',
       },
     });
-
+    if (response.data.returncode !== "200") {
+      throw new Error(response.data.message)
+    }
     return response.data.image;
   } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message); 
+    }
     throw new Error('Failed to upload image');
   }
 };
