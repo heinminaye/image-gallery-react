@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback, useEffect } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
-import { useAppDispatch } from "../store/hooks";
-import { uploadImageThunk } from "../store/slices/imageSlice";
-import { FiUpload, FiImage, FiX, FiTrash2 } from "react-icons/fi";
+import { useAppDispatch } from "../../store/hooks";
+import { uploadImageThunk } from "../../store/slices/imageSlice";
+import { FiUpload, FiX, FiTrash2 } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import toast from "react-hot-toast";
 
@@ -22,6 +22,7 @@ const maxFileSize = 10 * 1024 * 1024; // 10MB
 
 const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +39,19 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
       document.body.classList.remove("overflow-hidden");
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    // Create preview URL when file is selected
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+
+      // Clean up
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -181,20 +195,16 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                   <input {...getInputProps()} />
 
                   {file ? (
-                    <div className="relative flex flex-col items-center space-y-3">
-                      <FiImage size={36} className="text-blue-600" />
-                      <p className="font-semibold text-gray-900 truncate max-w-full w-48">
-                        {file.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {(file.size / 1024).toFixed(2)} KB ·{" "}
-                        {file.type.split("/")[1].toUpperCase()}
-                      </p>
-
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden flex items-center justify-center">
+                      <img
+                        src={previewUrl || ""}
+                        alt="Preview"
+                        className="max-w-full max-h-full object-contain"
+                      />
                       <button
                         type="button"
                         onClick={removeFile}
-                        className="absolute top-0 cursor-pointer right-0 flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 transition-colors"
+                        className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-red-500 hover:text-white text-gray-600 transition-colors"
                         aria-label="Remove file"
                       >
                         <FiTrash2 size={18} />
@@ -278,7 +288,7 @@ const UploadModal = ({ isOpen, onClose }: UploadModalProps) => {
                       !description.trim() ||
                       isUploading
                     }
-                    className={`flex-1 py-2 px-4 rounded-lg text-white font-medium transition-colors ${
+                    className={`flex-1 py-2 px-4 cursor-pointer rounded-lg text-white font-medium transition-colors ${
                       !file ||
                       !title.trim() ||
                       !description.trim() ||

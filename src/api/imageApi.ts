@@ -62,3 +62,48 @@ export const uploadImage = async (
 export const getImageUrl = (fileId: string): string => {
   return `${config.imageBaseUrl}/${fileId}`;
 };
+
+export const updateImageMetadata = async (
+  fileId: string,
+  title: string,
+  description: string,
+  width?: number,
+  height?: number
+): Promise<Image> => {
+  try {
+    const response = await axios.put(`${config.endpoints.images}/${fileId}`, {
+      title,
+      description,
+      width,
+      height
+    }, {
+      baseURL: config.apiBaseUrl,
+    });
+    if (response.data.returncode !== "200") {
+      throw new Error(response.data.message)
+    }
+    return response.data.image;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message); 
+    }
+    throw new Error('Failed to update image');
+  }
+};
+
+export const deleteImage = async (fileId: string): Promise<boolean> => {
+  try {
+    const response = await axios.delete(`${config.endpoints.images}/${fileId}`, {
+      baseURL: config.apiBaseUrl,
+    });
+    if (response.data.returncode !== "200") {
+      throw new Error(response.data.message)
+    }
+    return true;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message); 
+    }
+    throw new Error('Failed to delete image');
+  }
+};

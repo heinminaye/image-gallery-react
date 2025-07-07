@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useAppSelector } from "../store/hooks";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import ImageCard from "../components/ImageCard";
-import ImageModal from "../components/ImageModal";
+import ImageModal from "../components/Modal/ImageDetailModal";
 import SearchBar from "../components/SearchBar";
-import UploadModal from "../components/UploadModal";
+import UploadModal from "../components/Modal/UploadModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiImage, FiUpload, FiCameraOff, FiX } from "react-icons/fi";
 import Loader from "../components/Loader";
 import type { Image } from "../models/images";
+import ImageEditModal from "../components/Modal/EditModal";
 
 const Home = () => {
   const { images, loading, error, hasMore } = useAppSelector(
@@ -19,6 +20,17 @@ const Home = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const loadingSkeletons = Array(6).fill(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedImageForEdit, setSelectedImageForEdit] = useState<Image | null>(null);
+
+  const handleImageClick = (image: Image) => {
+    setSelectedImage(image);
+  };
+
+  const handleEditClick = (image: Image) => {
+    setSelectedImageForEdit(image);
+    setIsEditModalOpen(true);
+  };
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
@@ -111,6 +123,7 @@ const Home = () => {
                     key={image._id}
                     image={image}
                     onClick={() => setSelectedImage(image)}
+                    onEditClick={() => handleEditClick(image)}
                   />
                 ))}
 
@@ -151,11 +164,22 @@ const Home = () => {
       <ImageModal
         image={selectedImage}
         onClose={() => setSelectedImage(null)}
+        onEditClick={() => {
+          if (selectedImage) {
+            handleEditClick(selectedImage);
+          }
+        }}
       />
       <UploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
       />
+       {isEditModalOpen && selectedImageForEdit && (
+        <ImageEditModal
+          image={selectedImageForEdit}
+          onClose={() => setIsEditModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

@@ -2,17 +2,22 @@ import { motion } from "framer-motion";
 import { getImageUrl } from "../api/imageApi";
 import { useState } from "react";
 import type { Image } from "../models/images";
-import { FiDownload, FiCalendar } from "react-icons/fi";
+import { FiDownload, FiCalendar, FiEdit, FiTrash2, FiMoreHorizontal } from "react-icons/fi";
 import { downloadFile, formatDate } from "../utils/helpers";
+import { useAppDispatch } from "../store/hooks";
+import { deleteImageThunk } from "../store/slices/imageSlice";
 
 interface ImageCardProps {
   image: Image;
   onClick: () => void;
+  onEditClick: () => void;
 }
 
-const ImageCard = ({ image, onClick }: ImageCardProps) => {
+const ImageCard = ({ image, onClick, onEditClick }: ImageCardProps) => {
+  const dispatch = useAppDispatch();
   const [loaded, setLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   // Extract file extension from contentType
   const fileType = image.contentType?.split("/")[1]?.toUpperCase() || "";
@@ -28,6 +33,20 @@ const ImageCard = ({ image, onClick }: ImageCardProps) => {
 
   const typeClass = typeColorMap[fileType] || typeColorMap.DEFAULT;
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    if (window.confirm('Are you sure you want to delete this image?')) {
+      dispatch(deleteImageThunk(image.fileId));
+    }
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    onEditClick();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -42,7 +61,10 @@ const ImageCard = ({ image, onClick }: ImageCardProps) => {
       onClick={onClick}
       className="relative rounded-2xl cursor-pointer overflow-hidden bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setShowMenu(false);
+      }}
     >
       {/* Image with hover zoom */}
       <div className="relative h-56 w-full overflow-hidden p-2">
@@ -64,15 +86,63 @@ const ImageCard = ({ image, onClick }: ImageCardProps) => {
             y: isHovered ? 0 : -1,
           }}
         >
-          <button
+          {/* <button
             className="p-2 z-40 bg-white/90 rounded-full cursor-pointer shadow-sm hover:bg-gray-100 transition-colors"
             onClick={(e) => {
               e.stopPropagation();
-              downloadFile(getImageUrl(image?.fileId), image.fileId, image.title);
+              downloadFile(getImageUrl(image.fileId), image.fileId, image.title);
             }}
           >
             <FiDownload className="text-gray-700" size={16} />
-          </button>
+          </button> */}
+          
+          {/* Three-dot menu */}
+          <div className="relative">
+            <button
+              className="p-2 z-40 bg-white/90 rounded-full cursor-pointer shadow-sm hover:bg-gray-100 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu(!showMenu);
+              }}
+            >
+              <FiMoreHorizontal className="text-gray-700" size={16} />
+            </button>
+
+            {/* Dropdown menu */}
+            {showMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200"
+              >
+                <button
+                  className="flex cursor-pointer items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                 onClick={(e) => {
+                          e.stopPropagation();
+                          downloadFile(getImageUrl(image.fileId), image.fileId, image.title);
+                        }}
+                >
+                  <FiDownload className="mr-2" size={14} />
+                  Download
+                </button>
+                <button
+                  className="flex items-center cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                  onClick={handleEditClick}
+                >
+                  <FiEdit className="mr-2" size={14} />
+                  Edit
+                </button>
+                <button
+                  className="flex items-center cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
+                  onClick={handleDelete}
+                >
+                  <FiTrash2 className="mr-2" size={14} />
+                  Delete
+                </button>
+              </motion.div>
+            )}
+          </div>
         </motion.div>
 
         {/* Date badge */}
