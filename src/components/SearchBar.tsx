@@ -14,7 +14,7 @@ const SearchBar = ({ disabled }: SearchBarProps) => {
   const dispatch = useAppDispatch();
 
   const handleSearch = () => {
-    if (!disabled) {
+    if (!disabled && query.trim()) {
       dispatch(clearImages());
       dispatch(setSearchQuery(query.trim()));
     }
@@ -26,10 +26,6 @@ const SearchBar = ({ disabled }: SearchBarProps) => {
 
   const clearSearch = () => {
     setQuery('');
-    if (!disabled) {
-      dispatch(clearImages());
-      dispatch(setSearchQuery(''));
-    }
   };
 
   return (

@@ -32,6 +32,10 @@ const Home = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleRefresh = () => {
+  window.location.reload();
+};
+
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -41,7 +45,8 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
+              onClick={handleRefresh}
+              className="flex items-center cursor-pointer gap-3"
             >
               <div className="bg-blue-500/10 p-2.5 rounded-xl text-blue-600">
                 <FiImage size={24} />
@@ -152,7 +157,7 @@ const Home = () => {
           </AnimatePresence>
 
           {/* Infinite scroll loader */}
-          {hasMore && (
+          {hasMore && !error && (
             <div ref={loadMoreRef} className="flex justify-center py-8">
               <Loader />
             </div>
