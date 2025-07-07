@@ -23,10 +23,6 @@ const Home = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedImageForEdit, setSelectedImageForEdit] = useState<Image | null>(null);
 
-  const handleImageClick = (image: Image) => {
-    setSelectedImage(image);
-  };
-
   const handleEditClick = (image: Image) => {
     setSelectedImageForEdit(image);
     setIsEditModalOpen(true);
